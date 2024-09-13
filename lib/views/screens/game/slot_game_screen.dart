@@ -8,6 +8,7 @@ import 'package:slot_game/slot_machine/roll_slot.dart';
 import 'package:slot_game/slot_machine/roll_slot_controller.dart';
 import 'package:slot_game/utils/assets.dart';
 import 'package:slot_game/utils/color_const.dart';
+import 'package:slot_game/utils/constants.dart';
 import 'package:slot_game/views/screens/settings/setting_screen.dart';
 import 'package:slot_game/views/widgets/custom_card.dart';
 import 'package:slot_game/views/widgets/custom_text.dart';
@@ -103,11 +104,11 @@ class _SlotGameScreenState extends State<SlotGameScreen> {
     } else if (slot1 == 0 && slot2 == 0 && slot3 == 0) {
       balance += betAmount * 21;
     } else if (slot1 == 0 || slot2 == 0 || slot3 == 0) {
-      balance += betAmount * 5;
+      balance += betAmount * 2;
     } else if (slot1 == 0 && slot2 == 0 ||
         slot1 == 0 && slot3 == 0 ||
         slot2 == 0 && slot3 == 0) {
-      balance += betAmount * 7;
+      balance += betAmount * 4;
     }
     LocalStorage.instance.write(StorageKey.balance.name, balance);
     setState(() {});
@@ -129,6 +130,7 @@ class _SlotGameScreenState extends State<SlotGameScreen> {
           child: Padding(
             padding: EdgeInsets.all(5.w),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -153,7 +155,6 @@ class _SlotGameScreenState extends State<SlotGameScreen> {
                     ),
                   ],
                 ),
-                kSizedBoxH10,
                 CustomCard(
                   color: bgColor,
                   widget: Row(
@@ -167,7 +168,8 @@ class _SlotGameScreenState extends State<SlotGameScreen> {
                     ],
                   ),
                 ),
-                Expanded(
+                SizedBox(
+                  height: 340.h,
                   child: CustomCard(
                     widget: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -195,6 +197,7 @@ class _SlotGameScreenState extends State<SlotGameScreen> {
                 CustomCard(
                     widget: Column(
                   children: [
+                    kSizedBoxH10,
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
@@ -305,41 +308,46 @@ class _SlotGameScreenState extends State<SlotGameScreen> {
                         ),
                       ],
                     ),
-                    kSizedBoxH10,
+                    kSizedBoxH15,
                     CustomGameButton(
                       onTap: () {
-                        balance -= betAmount;
-                        final index = prizesList.length - 1;
-                        _rollSlotController.animateRandomly(
-                            topIndex: Random().nextInt(index),
-                            centerIndex: Random().nextInt(index),
-                            bottomIndex: Random().nextInt(index));
-                        _rollSlotController1.animateRandomly(
-                            topIndex: Random().nextInt(index),
-                            centerIndex: Random().nextInt(index),
-                            bottomIndex: Random().nextInt(index));
-                        _rollSlotController2.animateRandomly(
-                            topIndex: Random().nextInt(index),
-                            centerIndex: Random().nextInt(index),
-                            bottomIndex: Random().nextInt(index));
+                        if (balance < betAmount) {
+                          constants.showSnackBar(
+                              title: 'Warning', msg: 'Insufficient balance.');
+                        } else {
+                          balance -= betAmount;
+                          final index = prizesList.length - 1;
+                          _rollSlotController.animateRandomly(
+                              topIndex: Random().nextInt(index),
+                              centerIndex: Random().nextInt(index),
+                              bottomIndex: Random().nextInt(index));
+                          _rollSlotController1.animateRandomly(
+                              topIndex: Random().nextInt(index),
+                              centerIndex: Random().nextInt(index),
+                              bottomIndex: Random().nextInt(index));
+                          _rollSlotController2.animateRandomly(
+                              topIndex: Random().nextInt(index),
+                              centerIndex: Random().nextInt(index),
+                              bottomIndex: Random().nextInt(index));
 
-                        Future.delayed(const Duration(seconds: 2), () {
-                          _rollSlotController.stop();
-                        });
-                        Future.delayed(const Duration(seconds: 3), () {
-                          _rollSlotController1.stop();
-                        });
-                        Future.delayed(const Duration(seconds: 4), () {
-                          _rollSlotController2.stop();
-                        });
+                          Future.delayed(const Duration(seconds: 2), () {
+                            _rollSlotController.stop();
+                          });
+                          Future.delayed(const Duration(seconds: 3), () {
+                            _rollSlotController1.stop();
+                          });
+                          Future.delayed(const Duration(seconds: 4), () {
+                            _rollSlotController2.stop();
+                          });
+                        }
                       },
                       width: 0.2.sh,
                       text: 'play'.tr,
                       textColor: Colors.white,
                     ),
+                    kSizedBoxH10,
                   ],
                 )),
-                kSizedBoxH10,
               ],
             ),
           ),
@@ -361,30 +369,42 @@ class RollSlotWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Flexible(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Flexible(
-            child: RollSlot(
-                itemExtend: 115,
-                rollSlotController: rollSlotController,
-                children: prizesList.map(
-                  (e) {
-                    return BuildItem(
-                      asset: e,
-                    );
-                  },
-                ).toList()),
-          ),
-          Flexible(
-            child: TextButton(
-              onPressed: null,
-              child: CustomText(text: ''.tr),
-            ),
-          ),
-        ],
-      ),
+      child: RollSlot(
+          itemExtend: 115,
+          rollSlotController: rollSlotController,
+          children: prizesList.map(
+            (e) {
+              return BuildItem(
+                asset: e,
+              );
+            },
+          ).toList()),
     );
+    // return Flexible(
+    //   child: Column(
+    //     mainAxisAlignment: MainAxisAlignment.center,
+    //     children: <Widget>[
+    //       Flexible(
+    //         child: RollSlot(
+    //             itemExtend: 115,
+    //             rollSlotController: rollSlotController,
+    //             children: prizesList.map(
+    //               (e) {
+    //                 return BuildItem(
+    //                   asset: e,
+    //                 );
+    //               },
+    //             ).toList()),
+    //       ),
+    //       // Flexible(
+    //       //   child: TextButton(
+    //       //     onPressed: null,
+    //       //     child: CustomText(text: ''.tr),
+    //       //   ),
+    //       // ),
+    //     ],
+    //   ),
+    // );
   }
 }
 
