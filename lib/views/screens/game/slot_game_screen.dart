@@ -52,6 +52,7 @@ class _SlotGameScreenState extends State<SlotGameScreen> {
   bool selected2000 = false;
   bool selected3000 = false;
   bool selected5000 = false;
+  bool isBtnEnable = true;
 
   @override
   void initState() {
@@ -62,7 +63,6 @@ class _SlotGameScreenState extends State<SlotGameScreen> {
         print(_rollSlotController.centerIndex);
         slot1 = _rollSlotController.centerIndex;
       }
-      setState(() {});
     });
     _rollSlotController1.addListener(() {
       if (_rollSlotController1.state == RollSlotControllerState.stopped) {
@@ -70,8 +70,6 @@ class _SlotGameScreenState extends State<SlotGameScreen> {
         print(_rollSlotController1.centerIndex);
         slot2 = _rollSlotController1.centerIndex;
       }
-
-      setState(() {});
     });
     _rollSlotController2.addListener(() {
       if (_rollSlotController2.state == RollSlotControllerState.stopped) {
@@ -80,7 +78,6 @@ class _SlotGameScreenState extends State<SlotGameScreen> {
         slot3 = _rollSlotController2.centerIndex;
         calculateBalance();
       }
-
       setState(() {});
     });
     super.initState();
@@ -311,34 +308,38 @@ class _SlotGameScreenState extends State<SlotGameScreen> {
                     kSizedBoxH15,
                     CustomGameButton(
                       onTap: () {
-                        if (balance < betAmount) {
-                          constants.showSnackBar(
-                              title: 'Warning', msg: 'Insufficient balance.');
-                        } else {
-                          balance -= betAmount;
-                          final index = prizesList.length - 1;
-                          _rollSlotController.animateRandomly(
-                              topIndex: Random().nextInt(index),
-                              centerIndex: Random().nextInt(index),
-                              bottomIndex: Random().nextInt(index));
-                          _rollSlotController1.animateRandomly(
-                              topIndex: Random().nextInt(index),
-                              centerIndex: Random().nextInt(index),
-                              bottomIndex: Random().nextInt(index));
-                          _rollSlotController2.animateRandomly(
-                              topIndex: Random().nextInt(index),
-                              centerIndex: Random().nextInt(index),
-                              bottomIndex: Random().nextInt(index));
+                        if (isBtnEnable) {
+                          isBtnEnable = false;
+                          if (balance < betAmount) {
+                            constants.showSnackBar(
+                                title: 'Warning', msg: 'Insufficient balance.');
+                          } else {
+                            balance -= betAmount;
+                            final index = prizesList.length - 1;
+                            _rollSlotController.animateRandomly(
+                                topIndex: Random().nextInt(index),
+                                centerIndex: Random().nextInt(index),
+                                bottomIndex: Random().nextInt(index));
+                            _rollSlotController1.animateRandomly(
+                                topIndex: Random().nextInt(index),
+                                centerIndex: Random().nextInt(index),
+                                bottomIndex: Random().nextInt(index));
+                            _rollSlotController2.animateRandomly(
+                                topIndex: Random().nextInt(index),
+                                centerIndex: Random().nextInt(index),
+                                bottomIndex: Random().nextInt(index));
 
-                          Future.delayed(const Duration(seconds: 2), () {
-                            _rollSlotController.stop();
-                          });
-                          Future.delayed(const Duration(seconds: 3), () {
-                            _rollSlotController1.stop();
-                          });
-                          Future.delayed(const Duration(seconds: 4), () {
-                            _rollSlotController2.stop();
-                          });
+                            Future.delayed(const Duration(seconds: 2), () {
+                              _rollSlotController.stop();
+                            });
+                            Future.delayed(const Duration(seconds: 3), () {
+                              _rollSlotController1.stop();
+                            });
+                            Future.delayed(const Duration(seconds: 4), () {
+                              _rollSlotController2.stop();
+                              isBtnEnable = true;
+                            });
+                          }
                         }
                       },
                       width: 0.2.sh,

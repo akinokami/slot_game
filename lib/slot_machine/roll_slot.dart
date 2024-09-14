@@ -126,7 +126,7 @@ class _RollSlotState extends State<RollSlot> {
   Future<void> animate() async {
     if (widget.rollSlotController != null) {
       _nextItemTimer =
-          Timer.periodic(const Duration(milliseconds: 120), (timer) async {
+          Timer.periodic(const Duration(milliseconds: 110), (timer) async {
         stopSlotAtIndex(
           currentRollIndex: currentIndex % widget.children.length,
         );
